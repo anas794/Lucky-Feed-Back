@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lucky Broast - Customer Feedback</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-main: #3b0914;
+      --card-bg: #1a060b;
+      --card-border: #521220;
+      --gold-primary: #ffc702;
+      --gold-gradient: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+      --crimson: #8b0000;
+      --burgundy: #581845;
+      --text-main: #f8fafc;
+      --text-muted: #d1d5db;
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
+    body { 
+      background: radial-gradient(circle at top, #5c0f20 0%, #24050b 60%, #120205 100%); 
+      color: var(--text-main); 
+      padding-bottom: 50px; 
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(180deg, rgba(92, 15, 32, 0.85) 0%, rgba(18, 2, 5, 0.95) 100%);
+      padding: 25px 20px 15px; text-align: center;
+      position: relative; border-bottom: 2px solid #5c0f20;
+    }
+    
+    .brand-logo-container {
+      width: 110px; height: 110px; margin: 0 auto 10px;
+      border-radius: 50%; border: 3px solid var(--gold-primary);
+      background: #111827; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 25px rgba(255, 199, 2, 0.4); overflow: hidden;
+    }
+    .brand-logo-container img { width: 100%; height: 100%; object-fit: cover; }
+
+    .header-title {
+      font-size: 1.8rem; font-weight: 800;
+      background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      letter-spacing: 1px;
+    }
+    .header-sub { font-size: 0.9rem; color: var(--gold-primary); margin-top: 4px; font-weight: 600; }
+    .header-sub-msg { 
+      font-size: 0.88rem; 
+      color: #ffed4a; 
+      margin-top: 4px; 
+      font-weight: 600; 
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    }
+
+    .admin-btn {
+      position: absolute; top: 15px; right: 15px;
+      background: rgba(255, 255, 255, 0.08); color: var(--gold-primary); border: 1px solid rgba(255, 199, 2, 0.4);
+      padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; cursor: pointer;
+      display: flex; align-items: center; gap: 6px; backdrop-filter: blur(5px);
+    }
+
+    .container { max-width: 650px; margin: 25px auto; padding: 0 15px; }
+
+    .card {
+      background: var(--card-bg); border-radius: var(--radius);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7); border: 1px solid var(--card-border);
+      padding: 25px; margin-bottom: 25px;
+    }
+    .form-title {
+      font-size: 1.25rem; font-weight: 700; color: var(--gold-primary);
+      margin-bottom: 20px; border-bottom: 1px solid var(--card-border); padding-bottom: 10px;
+    }
+
+    .form-group { margin-bottom: 20px; position: relative; }
+    label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; color: #f1f5f9; }
+    .optional-tag { font-size: 0.75rem; color: var(--text-muted); font-weight: normal; }
+
+    input, select, textarea {
+      width: 100%; padding: 12px 14px; border: 1px solid var(--card-border);
+      border-radius: 8px; font-size: 0.95rem; background: #120205; color: var(--text-main);
+    }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--gold-primary); }
+
+    .multi-select-box {
+      background: #120205; border: 1px solid var(--card-border); border-radius: 8px;
+      padding: 12px 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+    }
+    .multi-select-options {
+      display: none; position: absolute; width: 100%; max-height: 220px; overflow-y: auto;
+      background: #1a060b; border: 1px solid var(--gold-primary); border-radius: 8px;
+      z-index: 100; margin-top: 5px; box-shadow: 0 10px 25px rgba(0,0,0,0.9);
+    }
+    .multi-select-options label {
+      display: flex; align-items: center; gap: 10px; padding: 10px 14px; margin: 0;
+      cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); font-weight: normal;
+    }
+    .multi-select-options label:hover { background: rgba(255, 199, 2, 0.15); }
+    .multi-select-options input[type="checkbox"] { width: auto; }
+
+    .order-type-selector { display: flex; gap: 12px; }
+    .order-type-btn {
+      flex: 1; padding: 12px; border: 1px solid var(--card-border); background: #120205;
+      color: var(--text-muted); border-radius: 8px; cursor: pointer; font-weight: 600; text-align: center;
+      transition: all 0.2s;
+    }
+    .order-type-btn.active {
+      border-color: var(--gold-primary); background: rgba(255, 199, 2, 0.2); color: var(--gold-primary);
+    }
+
+    .star-rating-box {
+      background: #120205; padding: 15px; border-radius: 10px; border: 1px solid var(--card-border); text-align: center;
+    }
+    .star-rating { display: flex; flex-direction: row-reverse; justify-content: center; gap: 10px; }
+    .star-rating input { display: none; }
+    .star-rating label { font-size: 2.2rem; color: #4a1520; cursor: pointer; margin: 0; transition: color 0.15s; }
+    .star-rating input:checked ~ label,
+    .star-rating label:hover,
+    .star-rating label:hover ~ label { color: var(--gold-primary); }
+    
+    .rating-description {
+      margin-top: 8px; font-weight: 700; font-size: 1rem; color: var(--gold-primary); min-height: 24px;
+    }
+
+    .aspect-ratings {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px; background: #120205; border: 1px solid var(--card-border); padding: 16px; border-radius: 10px;
+    }
+    .aspect-item { display: flex; justify-content: space-between; align-items: center; background: #1a060b; padding: 10px 12px; border-radius: 8px; }
+    .aspect-label { font-size: 0.85rem; font-weight: 600; }
+    .compact-stars { display: flex; flex-direction: row-reverse; gap: 4px; }
+    .compact-stars input { display: none; }
+    .compact-stars label { font-size: 1.3rem; color: #4a1520; cursor: pointer; margin: 0; }
+    .compact-stars input:checked ~ label,
+    .compact-stars label:hover,
+    .compact-stars label:hover ~ label { color: var(--gold-primary); }
+
+    .voice-section { background: #120205; border: 1px solid var(--card-border); padding: 15px; border-radius: 10px; margin-top: 10px; }
+    .voice-controls { display: flex; align-items: center; gap: 12px; }
+    .btn-rec {
+      background: var(--crimson); color: white; border: none; padding: 10px 16px; border-radius: 20px;
+      font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;
+    }
+    .rec-status { font-size: 0.85rem; color: var(--text-muted); }
+    audio { width: 100%; margin-top: 12px; height: 38px; }
+
+    .btn-submit {
+      width: 100%; background: var(--gold-gradient); color: #000; border: none;
+      padding: 14px; border-radius: 8px; font-size: 1.05rem; font-weight: 800;
+      cursor: pointer; transition: transform 0.1s; margin-top: 10px;
+    }
+
+    .success-card { text-align: center; padding: 40px 20px; display: none; }
+    .success-card i { font-size: 3.5rem; color: #27ae60; margin-bottom: 15px; }
+
+    .admin-panel { display: none; }
+    .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+    .admin-badge { background: rgba(255, 199, 2, 0.15); color: var(--gold-primary); padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; }
+    .btn-export { background: #16a34a; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; }
+    .admin-filter-field { display: flex; flex-direction: column; gap: 4px; margin: 0; font-size: 0.75rem; color: var(--gold-primary); }
+    .admin-filter-note { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 16px; }
+    #adminDateFilter { color-scheme: dark; max-width: 100%; }
+    .filter-select { width: auto; padding: 6px 12px; background: #120205; border: 1px solid var(--gold-primary); color: var(--text-main); font-size: 0.85rem; }
+    
+    .review-card-admin { background: #120205; border: 1px solid var(--card-border); border-radius: 10px; padding: 16px; margin-bottom: 15px; }
+    .review-meta { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.85rem; color: var(--text-muted); }
+    .review-ordered { font-weight: 600; color: var(--gold-primary); margin-bottom: 8px; font-size: 0.9rem; }
+    .mini-scores { display: flex; flex-wrap: wrap; gap: 8px; background: #1a060b; padding: 8px; border-radius: 6px; font-size: 0.8rem; margin: 10px 0; }
+    .mini-score-tag { background: #2a0b12; padding: 3px 7px; border-radius: 4px; color: var(--text-main); }
+    .order-type-tag { background: var(--burgundy); color: var(--gold-primary); padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
+
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
+    .modal-content { background: var(--card-bg); border: 1px solid var(--card-border); padding: 25px; border-radius: 14px; width: 90%; max-width: 360px; text-align: center; }
+
+    .popup-option-btn {
+      display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%;
+      padding: 16px; margin: 12px 0; border-radius: 10px; border: 2px solid var(--card-border);
+      background: #120205; color: var(--text-main); font-size: 1.1rem; font-weight: 700;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .popup-option-btn:hover {
+      border-color: var(--gold-primary); background: rgba(255, 199, 2, 0.15); color: var(--gold-primary);
+    }
+  </style>
+
+  <!-- Firebase SDK Setup & Real-time Sync Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDx5Haj7cVgL8tgiHUHS76akagwLOi8i6Y",
+      authDomain: "lucky-feed-back-f5a03.firebaseapp.com",
+      projectId: "lucky-feed-back-f5a03",
+      storageBucket: "lucky-feed-back-f5a03.firebasestorage.app",
+      messagingSenderId: "266383647454",
+      appId: "1:266383647454:web:3b6b7d203a7d40aae3184f",
+      measurementId: "G-16L97GFQV6"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getFirestore(app);
+
+    let mediaRecorder;
+    let audioChunks = [];
+    let audioBase64 = null;
+    let selectedItemsList = [];
+    let reviewsData = [];
+
+    window.selectOrderType = function(type) {
+      setFormOrderType(type);
+      document.getElementById('orderTypeModal').style.display = 'none';
+    }
+
+    function setFormOrderType(type) {
+      document.getElementById('selectedOrderType').value = type;
+      const btnDine = document.getElementById('btnDineIn');
+      const btnTake = document.getElementById('btnTakeaway');
+      
+      if (type === 'Dine-in') {
+        btnDine.classList.add('active');
+        btnTake.classList.remove('active');
+      } else {
+        btnTake.classList.add('active');
+        btnDine.classList.remove('active');
+      }
+    }
+
+    window.toggleMultiSelect = function() {
+      const drop = document.getElementById('multiSelectDropdown');
+      drop.style.display = drop.style.display === 'block' ? 'none' : 'block';
+    }
+
+    window.updateSelectedItems = function() {
+      const checkboxes = document.querySelectorAll('#multiSelectDropdown input[type="checkbox"]:checked');
+      selectedItemsList = Array.from(checkboxes).map(cb => cb.value);
+      const textSpan = document.getElementById('selectedItemsText');
+      
+      if (selectedItemsList.length === 0) {
+        textSpan.innerText = '-- Select Menu Items --';
+      } else {
+        textSpan.innerText = selectedItemsList.join(', ');
+      }
+    }
+
+    document.addEventListener('click', function(e) {
+      const box = document.querySelector('.multi-select-box');
+      const drop = document.getElementById('multiSelectDropdown');
+      if (box && drop && !box.contains(e.target) && !drop.contains(e.target)) {
+        drop.style.display = 'none';
+      }
+    });
+
+    window.setRatingText = function(text) {
+      document.getElementById('ratingText').innerText = text;
+    }
+
+    // Real-time listener to fetch reviews from Firestore automatically
+    function initRealtimeSync() {
+      const q = query(collection(db, "reviews"), orderBy("date", "desc"));
+      onSnapshot(q, (snapshot) => {
+        reviewsData = [];
+        snapshot.forEach((doc) => {
+          reviewsData.push({ id: doc.id, ...doc.data() });
+        });
+        // Agar admin panel khula hai to list refresh kar do
+        if (document.getElementById('adminPanel').style.display === 'block') {
+          renderAdminReviews();
+        }
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initRealtimeSync();
+
+      const recBtn = document.getElementById('recBtn');
+      const recStatus = document.getElementById('recStatus');
+      const audioPreview = document.getElementById('audioPreview');
+
+      recBtn.addEventListener('click', async () => {
+        if (mediaRecorder && mediaRecorder.state === "recording") {
+          mediaRecorder.stop();
+          recBtn.innerHTML = '<i class="fa-solid fa-microphone"></i> Re-record Voice';
+          recStatus.innerText = 'Voice recorded!';
+        } else {
+          try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
+
+            mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
+            mediaRecorder.onstop = () => {
+              const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+              const reader = new FileReader();
+              reader.readAsDataURL(audioBlob);
+              reader.onloadend = () => {
+                audioBase64 = reader.result;
+                audioPreview.src = audioBase64;
+                audioPreview.style.display = 'block';
+              };
+            };
+
+            mediaRecorder.start();
+            recBtn.innerHTML = '<i class="fa-solid fa-stop"></i> Stop Recording';
+            recStatus.innerText = 'Recording... Speak now!';
+          } catch (err) {
+            alert('Microphone access is required to record voice.');
+          }
+        }
+      });
+
+      document.getElementById('feedbackForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const orderType = document.getElementById('selectedOrderType').value;
+        if (!orderType) {
+          return alert('Please select Dine-in or Takeaway.');
+        }
+
+        const commentText = document.getElementById('custComment').value.trim();
+        if (!commentText && !audioBase64) {
+          return alert('Please write a comment or record a voice note.');
+        }
+
+        const getVal = (name) => {
+          const el = document.querySelector(`input[name="${name}"]:checked`);
+          return el ? parseInt(el.value) : null;
+        };
+
+        const labels = { 1: 'Poor', 2: 'Needs Improvement', 3: 'Satisfied', 4: 'Excellent', 5: 'Superb' };
+        const overallVal = getVal('overallStar');
+
+        const newReview = {
+          date: new Date().toISOString(),
+          orderType: orderType,
+          name: document.getElementById('custName').value,
+          phone: document.getElementById('custPhone').value || 'N/A',
+          item: selectedItemsList.length > 0 ? selectedItemsList.join(', ') : 'Not Specified',
+          overall: overallVal,
+          overallLabel: labels[overallVal],
+          taste: getVal('tasteRating'),
+          service: getVal('serviceRating'),
+          onTime: getVal('timeRating'),
+          staff: getVal('staffRating'),
+          ambiance: getVal('ambianceRating'),
+          comment: commentText,
+          voice: audioBase64 || ''
+        };
+
+        try {
+          // Send data to Firebase Cloud Firestore
+          await addDoc(collection(db, "reviews"), newReview);
+          document.getElementById('customerSection').style.display = 'none';
+          document.getElementById('successCard').style.display = 'block';
+        } catch (error) {
+          console.error("Error adding review: ", error);
+          alert('Failed to submit review. Please check your internet connection.');
+        }
+      });
+    });
+
+    window.resetForm = function() {
+      document.getElementById('feedbackForm').reset();
+      selectedItemsList = [];
+      document.getElementById('selectedItemsText').innerText = '-- Select Menu Items --';
+      audioBase64 = null;
+      audioPreview.style.display = 'none';
+      recBtn.innerHTML = '<i class="fa-solid fa-microphone"></i> Record Voice';
+      recStatus.innerText = 'Tap to speak your review';
+      document.getElementById('ratingText').innerText = 'Select Rating';
+      document.getElementById('orderTypeModal').style.display = 'flex';
+      document.getElementById('successCard').style.display = 'none';
+      document.getElementById('customerSection').style.display = 'block';
+    }
+
+    window.openAdminModal = function() {
+      document.getElementById('pinModal').style.display = 'flex';
+      document.getElementById('pinInput').focus();
+    }
+    window.closeModal = function() { document.getElementById('pinModal').style.display = 'none'; }
+
+    window.verifyPin = function() {
+      if (document.getElementById('pinInput').value === '1234') {
+        closeModal();
+        document.getElementById('orderTypeModal').style.display = 'none';
+        document.getElementById('customerSection').style.display = 'none';
+        document.getElementById('successCard').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
+        renderAdminReviews();
+      } else {
+        alert('Invalid PIN!');
+      }
+    }
+
+    window.closeAdmin = function() {
+      document.getElementById('adminPanel').style.display = 'none';
+      document.getElementById('customerSection').style.display = 'block';
+    }
+
+    function getFilteredReviews() {
+      const orderType = document.getElementById('adminFilter').value;
+      const day = document.getElementById('adminDayFilter').value;
+      const date = document.getElementById('adminDateFilter').value;
+      const sixtyDaysAgo = new Date();
+      sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
+
+      return reviewsData.filter(review => {
+        const reviewedAt = new Date(review.date);
+        if (Number.isNaN(reviewedAt.getTime())) return false;
+        const localDate = `${reviewedAt.getFullYear()}-${String(reviewedAt.getMonth() + 1).padStart(2, '0')}-${String(reviewedAt.getDate()).padStart(2, '0')}`;
+        return (date ? localDate === date : reviewedAt >= sixtyDaysAgo)
+          && (day === 'All' || reviewedAt.getDay() === Number(day))
+          && (orderType === 'All' || review.orderType === orderType);
+      });
+    }
+
+    window.clearAdminFilters = function() {
+      document.getElementById('adminFilter').value = 'All';
+      document.getElementById('adminDayFilter').value = 'All';
+      document.getElementById('adminDateFilter').value = '';
+      renderAdminReviews();
+    }
+
+    window.renderAdminReviews = function() {
+      const listEl = document.getElementById('adminReviewsList');
+      const recent = getFilteredReviews();
+
+      if (recent.length === 0) {
+        listEl.innerHTML = '<p style="text-align:center; padding: 20px; color: var(--text-muted);">No reviews found for this selection.</p>';
+        return;
+      }
+
+      listEl.innerHTML = recent.map(r => `
+        <div class="review-card-admin">
+          <div class="review-meta">
+            <span><strong>${r.name}</strong> (${r.phone})</span>
+            <span>${new Date(r.date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })}</span>
+          </div>
+          <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap;">
+            <span class="order-type-tag">${r.orderType || 'N/A'}</span>
+            <span class="review-ordered" style="margin-bottom:0;">🛒 Items: ${r.item}</span>
+          </div>
+          <div style="color: var(--gold-primary); margin-bottom: 8px;">Overall: ${'★'.repeat(r.overall)} (${r.overallLabel || r.overall + '/5'})</div>
+          <div class="mini-scores">
+            <span class="mini-score-tag">🍗 Taste: ${r.taste}/5</span>
+            <span class="mini-score-tag">🔔 Service: ${r.service || 'N/A'}/5</span>
+            <span class="mini-score-tag">⏱️ Serving Time: ${r.onTime}/5</span>
+            <span class="mini-score-tag">🤝 Staff: ${r.staff}/5</span>
+            <span class="mini-score-tag">🏛️ Ambiance: ${r.ambiance}/5</span>
+          </div>
+          ${r.comment ? `<p style="margin-top: 8px; font-size: 0.9rem;">"${r.comment}"</p>` : ''}
+          ${r.voice ? `<audio src="${r.voice}" controls style="margin-top:10px;"></audio>` : ''}
+        </div>
+      `).join('');
+    }
+
+    window.exportCSV = function() {
+      const filteredReviews = getFilteredReviews();
+      if (filteredReviews.length === 0) return alert('No Data to Export for this selection');
+      let csv = 'Date,OrderType,Name,Phone,Items,Overall,RatingLabel,Taste,Service,Serving Time,StaffHospitality,Ambiance,Comment\n';
+      filteredReviews.forEach(r => {
+        csv += `"${new Date(r.date).toLocaleString()}","${r.orderType||''}","${r.name}","${r.phone}","${r.item}",${r.overall},"${r.overallLabel||''}",${r.taste||''},${r.service||''},${r.onTime||''},${r.staff||''},${r.ambiance||''},"${r.comment||''}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `Lucky_Broast_Reviews_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+    }
+  </script>
+</head>
+<body>
+
+  <!-- Entry Order Type Choice Popup -->
+  <div id="orderTypeModal" class="modal" style="display: flex;">
+    <div class="modal-content">
+      <h3 style="color: var(--gold-primary); font-size: 1.3rem; margin-bottom: 6px;">Welcome to Lucky Broast</h3>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">How did you enjoy your meal today?</p>
+      
+      <button class="popup-option-btn" onclick="selectOrderType('Dine-in')">
+        <i class="fa-solid fa-utensils" style="color: var(--gold-primary);"></i> Dine-in
+      </button>
+
+      <button class="popup-option-btn" onclick="selectOrderType('Takeaway')">
+        <i class="fa-solid fa-bag-shopping" style="color: var(--gold-primary);"></i> Takeaway
+      </button>
+    </div>
+  </div>
+
+  <header>
+    <div class="brand-logo-container">
+      <img src="rcjd-logo.jpg" alt="Lucky Broast Logo" onerror="this.src='https://via.placeholder.com/110?text=Lucky+Broast'">
+    </div>
+    <div class="header-title">LUCKY BROAST</div>
+    <div class="header-sub">Eat Healthy, Think Better</div>
+    <div class="header-sub-msg">Help us make your next visit even more special!</div>
+    <button class="admin-btn" onclick="openAdminModal()">
+      <i class="fa-solid fa-lock"></i> Admin
+    </button>
+  </header>
+
+  <div class="container">
+    
+    <div id="customerSection" class="card">
+      <div class="form-title">Share Your Experience</div>
+      
+      <form id="feedbackForm">
+        
+        <div class="form-group">
+          <label>Order Type *</label>
+          <div class="order-type-selector">
+            <div id="btnDineIn" class="order-type-btn" onclick="setFormOrderType('Dine-in')"><i class="fa-solid fa-utensils"></i> Dine-in</div>
+            <div id="btnTakeaway" class="order-type-btn" onclick="setFormOrderType('Takeaway')"><i class="fa-solid fa-bag-shopping"></i> Takeaway</div>
+          </div>
+          <input type="hidden" id="selectedOrderType" required value="">
+        </div>
+
+        <div class="form-group">
+          <label for="custName">Your Name *</label>
+          <input type="text" id="custName" required placeholder="Enter your full name">
+        </div>
+
+        <div class="form-group">
+          <label for="custPhone">Phone Number <span class="optional-tag">(Optional)</span></label>
+          <input type="tel" id="custPhone" placeholder="03XXXXXXXXX">
+        </div>
+
+        <div class="form-group">
+          <label>What Did You Order? <span class="optional-tag">(Multiple Selectable)</span></label>
+          <div class="multi-select-box" onclick="toggleMultiSelect()">
+            <span id="selectedItemsText">-- Select Menu Items --</span>
+            <i class="fa-solid fa-chevron-down" style="font-size: 0.8rem; color: var(--gold-primary);"></i>
+          </div>
+          <div class="multi-select-options" id="multiSelectDropdown">
+            <!-- Checkbox Items -->
+            <label><input type="checkbox" value="Plain Fries" onchange="updateSelectedItems()"> Plain Fries</label>
+            <label><input type="checkbox" value="Masala Fries" onchange="updateSelectedItems()"> Masala Fries</label>
+            <label><input type="checkbox" value="Cheese Fries" onchange="updateSelectedItems()"> Cheese Fries</label>
+            <label><input type="checkbox" value="Mayo Garlic Fries" onchange="updateSelectedItems()"> Mayo Garlic Fries</label>
+            <label><input type="checkbox" value="Chicken Nuggets 10pcs" onchange="updateSelectedItems()"> Chicken Nuggets 10pcs</label>
+            <label><input type="checkbox" value="Arabian Injected Nuggets 10pcs" onchange="updateSelectedItems()"> Arabian Injected Nuggets 10pcs</label>
+            <label><input type="checkbox" value="Lahori Fish 4pcs" onchange="updateSelectedItems()"> Lahori Fish 4pcs</label>
+            <label><input type="checkbox" value="Crispy Wings 5pcs" onchange="updateSelectedItems()"> Crispy Wings 5pcs</label>
+            <label><input type="checkbox" value="Plain Broast Qtr" onchange="updateSelectedItems()"> Plain Broast Qtr</label>
+            <label><input type="checkbox" value="Plain Broast Half" onchange="updateSelectedItems()"> Plain Broast Half</label>
+            <label><input type="checkbox" value="Plain Broast Full" onchange="updateSelectedItems()"> Plain Broast Full</label>
+            <label><input type="checkbox" value="Crispy Broast Qtr" onchange="updateSelectedItems()"> Crispy Broast Qtr</label>
+            <label><input type="checkbox" value="Crispy Broast Half" onchange="updateSelectedItems()"> Crispy Broast Half</label>
+            <label><input type="checkbox" value="Crispy Broast Full" onchange="updateSelectedItems()"> Crispy Broast Full</label>
+            <label><input type="checkbox" value="Mayo Garlic Broast Qtr" onchange="updateSelectedItems()"> Mayo Garlic Broast Qtr</label>
+            <label><input type="checkbox" value="Mayo Garlic Broast Half" onchange="updateSelectedItems()"> Mayo Garlic Broast Half</label>
+            <label><input type="checkbox" value="Mayo Garlic Broast Full" onchange="updateSelectedItems()"> Mayo Garlic Broast Full</label>
+            <label><input type="checkbox" value="Chatpata Broast Qtr" onchange="updateSelectedItems()"> Chatpata Broast Qtr</label>
+            <label><input type="checkbox" value="Chatpata Broast Half" onchange="updateSelectedItems()"> Chatpata Broast Half</label>
+            <label><input type="checkbox" value="Chatpata Broast Full" onchange="updateSelectedItems()"> Chatpata Broast Full</label>
+            <label><input type="checkbox" value="Cheese Broast Qtr" onchange="updateSelectedItems()"> Cheese Broast Qtr</label>
+            <label><input type="checkbox" value="Cheese Broast Half" onchange="updateSelectedItems()"> Cheese Broast Half</label>
+            <label><input type="checkbox" value="Cheese Broast Full" onchange="updateSelectedItems()"> Cheese Broast Full</label>
+            <label><input type="checkbox" value="Injected Broast Qtr" onchange="updateSelectedItems()"> Injected Broast Qtr</label>
+            <label><input type="checkbox" value="Injected Broast Half" onchange="updateSelectedItems()"> Injected Broast Half</label>
+            <label><input type="checkbox" value="Injected Broast Full" onchange="updateSelectedItems()"> Injected Broast Full</label>
+            <label><input type="checkbox" value="Zinger Burger" onchange="updateSelectedItems()"> Zinger Burger</label>
+            <label><input type="checkbox" value="Spicy Zinger Burger" onchange="updateSelectedItems()"> Spicy Zinger Burger</label>
+            <label><input type="checkbox" value="Zinger Cheese Burger" onchange="updateSelectedItems()"> Zinger Cheese Burger</label>
+            <label><input type="checkbox" value="Jumbo Zinger Burger" onchange="updateSelectedItems()"> Jumbo Zinger Burger</label>
+            <label><input type="checkbox" value="Munch Burger" onchange="updateSelectedItems()"> Munch Burger</label>
+            <label><input type="checkbox" value="Chicken Burger" onchange="updateSelectedItems()"> Chicken Burger</label>
+            <label><input type="checkbox" value="Chicken Cheese Burger" onchange="updateSelectedItems()"> Chicken Cheese Burger</label>
+            <label><input type="checkbox" value="Chicken Jumbo Burger" onchange="updateSelectedItems()"> Chicken Jumbo Burger</label>
+            <label><input type="checkbox" value="Beef Jumbo Burger" onchange="updateSelectedItems()"> Beef Jumbo Burger</label>
+            <label><input type="checkbox" value="Beef Burger" onchange="updateSelectedItems()"> Beef Burger</label>
+            <label><input type="checkbox" value="Beef Cheese Burger" onchange="updateSelectedItems()"> Beef Cheese Burger</label>
+            <label><input type="checkbox" value="Fish Burger" onchange="updateSelectedItems()"> Fish Burger</label>
+            <label><input type="checkbox" value="Chapli Burger" onchange="updateSelectedItems()"> Chapli Burger</label>
+            <label><input type="checkbox" value="BBQ Burger" onchange="updateSelectedItems()"> BBQ Burger</label>
+            <label><input type="checkbox" value="Club Sandwich" onchange="updateSelectedItems()"> Club Sandwich</label>
+            <label><input type="checkbox" value="Chicken Sandwich" onchange="updateSelectedItems()"> Chicken Sandwich</label>
+            <label><input type="checkbox" value="BBQ Club Sandwich" onchange="updateSelectedItems()"> BBQ Club Sandwich</label>
+            <label><input type="checkbox" value="BBQ Chicken Sandwich" onchange="updateSelectedItems()"> BBQ Chicken Sandwich</label>
+            <label><input type="checkbox" value="Crispy Club Sandwich" onchange="updateSelectedItems()"> Crispy Club Sandwich</label>
+            <label><input type="checkbox" value="Malai Boti Club Sandwich" onchange="updateSelectedItems()"> Malai Boti Club Sandwich</label>
+            <label><input type="checkbox" value="Beef Boti Club Sandwich" onchange="updateSelectedItems()"> Beef Boti Club Sandwich</label>
+            <label><input type="checkbox" value="Chicken Tikka Leg" onchange="updateSelectedItems()"> Chicken Tikka Leg</label>
+            <label><input type="checkbox" value="Chicken Tikka Chest" onchange="updateSelectedItems()"> Chicken Tikka Chest</label>
+            <label><input type="checkbox" value="Malai Tikka Leg" onchange="updateSelectedItems()"> Malai Tikka Leg</label>
+            <label><input type="checkbox" value="Malai Tikka Chest" onchange="updateSelectedItems()"> Malai Tikka Chest</label>
+            <label><input type="checkbox" value="Haryali Tikka Leg" onchange="updateSelectedItems()"> Haryali Tikka Leg</label>
+            <label><input type="checkbox" value="Haryali Tikka Chest" onchange="updateSelectedItems()"> Haryali Tikka Chest</label>
+            <label><input type="checkbox" value="Behari Tikka Leg" onchange="updateSelectedItems()"> Behari Tikka Leg</label>
+            <label><input type="checkbox" value="Behari Tikka Chest" onchange="updateSelectedItems()"> Behari Tikka Chest</label>
+            <label><input type="checkbox" value="Rajhistani Tikka Leg" onchange="updateSelectedItems()"> Rajhistani Tikka Leg</label>
+            <label><input type="checkbox" value="Rajhistani Tikka Chest" onchange="updateSelectedItems()"> Rajhistani Tikka Chest</label>
+            <label><input type="checkbox" value="Kalmi Tikka" onchange="updateSelectedItems()"> Kalmi Tikka</label>
+            <label><input type="checkbox" value="Lucky Special Tikka Leg" onchange="updateSelectedItems()"> Lucky Special Tikka Leg</label>
+            <label><input type="checkbox" value="Lucky Special Tikka Chest" onchange="updateSelectedItems()"> Lucky Special Tikka Chest</label>
+            <label><input type="checkbox" value="Chicken Spicy Boti" onchange="updateSelectedItems()"> Chicken Spicy Boti</label>
+            <label><input type="checkbox" value="Chicken Malai Boti" onchange="updateSelectedItems()"> Chicken Malai Boti</label>
+            <label><input type="checkbox" value="Chicken Chatkhara Boti" onchange="updateSelectedItems()"> Chicken Chatkhara Boti</label>
+            <label><input type="checkbox" value="Beef Behari Boti" onchange="updateSelectedItems()"> Beef Behari Boti</label>
+            <label><input type="checkbox" value="Shishtok Boti (Thai)" onchange="updateSelectedItems()"> Shishtok Boti (Thai)</label>
+            <label><input type="checkbox" value="Garlic Boti" onchange="updateSelectedItems()"> Garlic Boti</label>
+            <label><input type="checkbox" value="Labinece Boti" onchange="updateSelectedItems()"> Labinece Boti</label>
+            <label><input type="checkbox" value="Afghani Boti 6 Seekh" onchange="updateSelectedItems()"> Afghani Boti 6 Seekh</label>
+            <label><input type="checkbox" value="Hunzai Kabab" onchange="updateSelectedItems()"> Hunzai Kabab</label>
+            <label><input type="checkbox" value="Chicken Reshmi Kabab" onchange="updateSelectedItems()"> Chicken Reshmi Kabab</label>
+            <label><input type="checkbox" value="Chicken Dhaga Kabab" onchange="updateSelectedItems()"> Chicken Dhaga Kabab</label>
+            <label><input type="checkbox" value="Beef Dhaga Kabab" onchange="updateSelectedItems()"> Beef Dhaga Kabab</label>
+            <label><input type="checkbox" value="Beef Kabab" onchange="updateSelectedItems()"> Beef Kabab</label>
+            <label><input type="checkbox" value="Beef Gola Kabab" onchange="updateSelectedItems()"> Beef Gola Kabab</label>
+            <label><input type="checkbox" value="Chandan Kabab" onchange="updateSelectedItems()"> Chandan Kabab</label>
+            <label><input type="checkbox" value="Tusrkish Kabab" onchange="updateSelectedItems()"> Tusrkish Kabab</label>
+            <label><input type="checkbox" value="Noratan Kabab" onchange="updateSelectedItems()"> Noratan Kabab</label>
+            <label><input type="checkbox" value="Chullu Kabab" onchange="updateSelectedItems()"> Chullu Kabab</label>
+            <label><input type="checkbox" value="Smokey Chapli Kabab" onchange="updateSelectedItems()"> Smokey Chapli Kabab</label>
+            <label><input type="checkbox" value="Chicken Roll" onchange="updateSelectedItems()"> Chicken Roll</label>
+            <label><input type="checkbox" value="Chicken Mayo Roll" onchange="updateSelectedItems()"> Chicken Mayo Roll</label>
+            <label><input type="checkbox" value="Chicken Juicy Roll" onchange="updateSelectedItems()"> Chicken Juicy Roll</label>
+            <label><input type="checkbox" value="Chicken Behari Roll" onchange="updateSelectedItems()"> Chicken Behari Roll</label>
+            <label><input type="checkbox" value="Chicken Malai Roll" onchange="updateSelectedItems()"> Chicken Malai Roll</label>
+            <label><input type="checkbox" value="Chicken Chatpata Roll" onchange="updateSelectedItems()"> Chicken Chatpata Roll</label>
+            <label><input type="checkbox" value="Chicken Zinger Roll" onchange="updateSelectedItems()"> Chicken Zinger Roll</label>
+            <label><input type="checkbox" value="Beef Boti Roll" onchange="updateSelectedItems()"> Beef Boti Roll</label>
+            <label><input type="checkbox" value="Beef Kabab Roll" onchange="updateSelectedItems()"> Beef Kabab Roll</label>
+            <label><input type="checkbox" value="Beef Behari Roll" onchange="updateSelectedItems()"> Beef Behari Roll</label>
+            <label><input type="checkbox" value="Beef Mayo Roll" onchange="updateSelectedItems()"> Beef Mayo Roll</label>
+            <label><input type="checkbox" value="Chicken Cheese Roll" onchange="updateSelectedItems()"> Chicken Cheese Roll</label>
+            <label><input type="checkbox" value="Chicken Fried Rice" onchange="updateSelectedItems()"> Chicken Fried Rice</label>
+            <label><input type="checkbox" value="Vegetable Fried Rice" onchange="updateSelectedItems()"> Vegetable Fried Rice</label>
+            <label><input type="checkbox" value="Chicken Masala Fried Rice" onchange="updateSelectedItems()"> Chicken Masala Fried Rice</label>
+            <label><input type="checkbox" value="Butter Fried Rice" onchange="updateSelectedItems()"> Butter Fried Rice</label>
+            <label><input type="checkbox" value="Lucky Special Fried Rice" onchange="updateSelectedItems()"> Lucky Special Fried Rice</label>
+            <label><input type="checkbox" value="Singapuri Rice" onchange="updateSelectedItems()"> Singapuri Rice</label>
+            <label><input type="checkbox" value="Malysian Rice" onchange="updateSelectedItems()"> Malysian Rice</label>
+            <label><input type="checkbox" value="Chicken Shezwan Sizzling With Rice" onchange="updateSelectedItems()"> Chicken Shezwan Sizzling With Rice</label>
+            <label><input type="checkbox" value="Chicken Jalfrezi Sizzling With Rice" onchange="updateSelectedItems()"> Chicken Jalfrezi Sizzling With Rice</label>
+            <label><input type="checkbox" value="Chicken Manchurian Sizzling With Rice" onchange="updateSelectedItems()"> Chicken Manchurian Sizzling With Rice</label>
+            <label><input type="checkbox" value="Chicken Shashlik Sizzling With Rice" onchange="updateSelectedItems()"> Chicken Shashlik Sizzling With Rice</label>
+            <label><input type="checkbox" value="Chicken Chilli Dry Sizzling With Rice" onchange="updateSelectedItems()"> Chicken Chilli Dry Sizzling With Rice</label>
+            <label><input type="checkbox" value="Chicken Garlic Sauce Sizzling With Rice" onchange="updateSelectedItems()"> Chicken Garlic Sauce Sizzling With Rice</label>
+            <label><input type="checkbox" value="Chicken Chilli Vegetable Sizzling With Rice" onchange="updateSelectedItems()"> Chicken Chilli Vegetable Sizzling With Rice</label>
+            <label><input type="checkbox" value="Beef Chilli Vegetable Sizzling With Rice" onchange="updateSelectedItems()"> Beef Chilli Vegetable Sizzling With Rice</label>
+            <label><input type="checkbox" value="Beef Chilli Dry Sizzling With Rice" onchange="updateSelectedItems()"> Beef Chilli Dry Sizzling With Rice</label>
+            <label><input type="checkbox" value="Alfredo Pasta" onchange="updateSelectedItems()"> Alfredo Pasta</label>
+            <label><input type="checkbox" value="Lucky Special Pasta" onchange="updateSelectedItems()"> Lucky Special Pasta</label>
+            <label><input type="checkbox" value="Chicken Chowmein" onchange="updateSelectedItems()"> Chicken Chowmein</label>
+            <label><input type="checkbox" value="Vegetable Chowmein" onchange="updateSelectedItems()"> Vegetable Chowmein</label>
+            <label><input type="checkbox" value="Lucky Special Chowmein" onchange="updateSelectedItems()"> Lucky Special Chowmein</label>
+            <label><input type="checkbox" value="Chicken Thai Chowmein" onchange="updateSelectedItems()"> Chicken Thai Chowmein</label>
+            <label><input type="checkbox" value="Beef Chowmein" onchange="updateSelectedItems()"> Beef Chowmein</label>
+            <label><input type="checkbox" value="Chicken Cheese Chowmein" onchange="updateSelectedItems()"> Chicken Cheese Chowmein</label>
+            <label><input type="checkbox" value="Peshawari Karahi Half" onchange="updateSelectedItems()"> Peshawari Karahi Half</label>
+            <label><input type="checkbox" value="Peshawari Karahi Full" onchange="updateSelectedItems()"> Peshawari Karahi Full</label>
+            <label><input type="checkbox" value="Shahi Karahi Half" onchange="updateSelectedItems()"> Shahi Karahi Half</label>
+            <label><input type="checkbox" value="Shahi Karahi Full" onchange="updateSelectedItems()"> Shahi Karahi Full</label>
+            <label><input type="checkbox" value="Green Karahi Half" onchange="updateSelectedItems()"> Green Karahi Half</label>
+            <label><input type="checkbox" value="Green Karahi Full" onchange="updateSelectedItems()"> Green Karahi Full</label>
+            <label><input type="checkbox" value="Mughlai Karahi Half" onchange="updateSelectedItems()"> Mughlai Karahi Half</label>
+            <label><input type="checkbox" value="Mughlai Karahi Full" onchange="updateSelectedItems()"> Mughlai Karahi Full</label>
+            <label><input type="checkbox" value="White Karahi Half" onchange="updateSelectedItems()"> White Karahi Half</label>
+            <label><input type="checkbox" value="White Karahi Full" onchange="updateSelectedItems()"> White Karahi Full</label>
+            <label><input type="checkbox" value="Chicken Shahi Boneless Karahi Half" onchange="updateSelectedItems()"> Chicken Shahi Boneless Karahi Half</label>
+            <label><input type="checkbox" value="Chicken Shahi Boneless Karahi Full" onchange="updateSelectedItems()"> Chicken Shahi Boneless Karahi Full</label>
+            <label><input type="checkbox" value="Achari Karahi Half" onchange="updateSelectedItems()"> Achari Karahi Half</label>
+            <label><input type="checkbox" value="Achari Karahi Full" onchange="updateSelectedItems()"> Achari Karahi Full</label>
+            <label><input type="checkbox" value="Mutton Peshawari Karahi Half" onchange="updateSelectedItems()"> Mutton Peshawari Karahi Half</label>
+            <label><input type="checkbox" value="Mutton Peshawari Karahi Full" onchange="updateSelectedItems()"> Mutton Peshawari Karahi Full</label>
+            <label><input type="checkbox" value="Mutton Shahi Karahi Half" onchange="updateSelectedItems()"> Mutton Shahi Karahi Half</label>
+            <label><input type="checkbox" value="Mutton Shahi Karahi Full" onchange="updateSelectedItems()"> Mutton Shahi Karahi Full</label>
+            <label><input type="checkbox" value="Mutton Green Karahi Half" onchange="updateSelectedItems()"> Mutton Green Karahi Half</label>
+            <label><input type="checkbox" value="Mutton Green Karahi Full" onchange="updateSelectedItems()"> Mutton Green Karahi Full</label>
+            <label><input type="checkbox" value="Mutton Mughlai Karahi Half" onchange="updateSelectedItems()"> Mutton Mughlai Karahi Half</label>
+            <label><input type="checkbox" value="Mutton Mughlai Karahi Full" onchange="updateSelectedItems()"> Mutton Mughlai Karahi Full</label>
+            <label><input type="checkbox" value="Mutton Mexican Karahi Half" onchange="updateSelectedItems()"> Mutton Mexican Karahi Half</label>
+            <label><input type="checkbox" value="Mutton Mexican Karahi Full" onchange="updateSelectedItems()"> Mutton Mexican Karahi Full</label>
+            <label><input type="checkbox" value="Mutton White Karahi Half" onchange="updateSelectedItems()"> Mutton White Karahi Half</label>
+            <label><input type="checkbox" value="Mutton White Karahi Full" onchange="updateSelectedItems()"> Mutton White Karahi Full</label>
+            <label><input type="checkbox" value="Mutton Milky Karahi Half" onchange="updateSelectedItems()"> Mutton Milky Karahi Half</label>
+            <label><input type="checkbox" value="Mutton Milky Karahi Full" onchange="updateSelectedItems()"> Mutton Milky Karahi Full</label>
+            <label><input type="checkbox" value="Mutton Namkeen Karahi Half" onchange="updateSelectedItems()"> Mutton Namkeen Karahi Half</label>
+            <label><input type="checkbox" value="Mutton Namkeen Karahi Full" onchange="updateSelectedItems()"> Mutton Namkeen Karahi Full</label>
+            <label><input type="checkbox" value="Chicken Shahi Handi Half" onchange="updateSelectedItems()"> Chicken Shahi Handi Half</label>
+            <label><input type="checkbox" value="Chicken Shahi Handi Full" onchange="updateSelectedItems()"> Chicken Shahi Handi Full</label>
+            <label><input type="checkbox" value="Cheesy Handi Half" onchange="updateSelectedItems()"> Cheesy Handi Half</label>
+            <label><input type="checkbox" value="Cheesy Handi Full" onchange="updateSelectedItems()"> Cheesy Handi Full</label>
+            <label><input type="checkbox" value="Chicken Achari Handi Half" onchange="updateSelectedItems()"> Chicken Achari Handi Half</label>
+            <label><input type="checkbox" value="Chicken Achari Handi Full" onchange="updateSelectedItems()"> Chicken Achari Handi Full</label>
+            <label><input type="checkbox" value="Chicken White Handi Half" onchange="updateSelectedItems()"> Chicken White Handi Half</label>
+            <label><input type="checkbox" value="Chicken White Handi Full" onchange="updateSelectedItems()"> Chicken White Handi Full</label>
+            <label><input type="checkbox" value="Chicken Makhni Handi Half" onchange="updateSelectedItems()"> Chicken Makhni Handi Half</label>
+            <label><input type="checkbox" value="Chicken Makhni Handi Full" onchange="updateSelectedItems()"> Chicken Makhni Handi Full</label>
+            <label><input type="checkbox" value="Chicken Paneer Handi Half" onchange="updateSelectedItems()"> Chicken Paneer Handi Half</label>
+            <label><input type="checkbox" value="Chicken Paneer Handi Full" onchange="updateSelectedItems()"> Chicken Paneer Handi Full</label>
+            <label><input type="checkbox" value="Chicken Green Handi Half" onchange="updateSelectedItems()"> Chicken Green Handi Half</label>
+            <label><input type="checkbox" value="Chicken Green Handi Full" onchange="updateSelectedItems()"> Chicken Green Handi Full</label>
+            <label><input type="checkbox" value="Chicken Lucky Special Handi Half" onchange="updateSelectedItems()"> Chicken Lucky Special Handi Half</label>
+            <label><input type="checkbox" value="Chicken Lucky Special Handi Full" onchange="updateSelectedItems()"> Chicken Lucky Special Handi Full</label>
+            <label><input type="checkbox" value="Lucky Special Pizza Small" onchange="updateSelectedItems()"> Lucky Special Pizza Small</label>
+            <label><input type="checkbox" value="Lucky Special Pizza Medium" onchange="updateSelectedItems()"> Lucky Special Pizza Medium</label>
+            <label><input type="checkbox" value="Lucky Special Pizza Large" onchange="updateSelectedItems()"> Lucky Special Pizza Large</label>
+            <label><input type="checkbox" value="Crown Crust Pizza Small" onchange="updateSelectedItems()"> Crown Crust Pizza Small</label>
+            <label><input type="checkbox" value="Crown Crust Pizza Medium" onchange="updateSelectedItems()"> Crown Crust Pizza Medium</label>
+            <label><input type="checkbox" value="Crown Crust Pizza Large" onchange="updateSelectedItems()"> Crown Crust Pizza Large</label>
+            <label><input type="checkbox" value="Creamy Pizza Small" onchange="updateSelectedItems()"> Creamy Pizza Small</label>
+            <label><input type="checkbox" value="Creamy Pizza Medium" onchange="updateSelectedItems()"> Creamy Pizza Medium</label>
+            <label><input type="checkbox" value="Creamy Pizza Large" onchange="updateSelectedItems()"> Creamy Pizza Large</label>
+            <label><input type="checkbox" value="Lucky Peri Pizza Small" onchange="updateSelectedItems()"> Lucky Peri Pizza Small</label>
+            <label><input type="checkbox" value="Lucky Peri Pizza Medium" onchange="updateSelectedItems()"> Lucky Peri Pizza Medium</label>
+            <label><input type="checkbox" value="Lucky Peri Pizza Large" onchange="updateSelectedItems()"> Lucky Peri Pizza Large</label>
+            <label><input type="checkbox" value="Special Italian Small" onchange="updateSelectedItems()"> Special Italian Small</label>
+            <label><input type="checkbox" value="Special Italian Medium" onchange="updateSelectedItems()"> Special Italian Medium</label>
+            <label><input type="checkbox" value="Special Italian Large" onchange="updateSelectedItems()"> Special Italian Large</label>
+            <label><input type="checkbox" value="Signature Miami Best Pizza Small" onchange="updateSelectedItems()"> Signature Miami Best Pizza Small</label>
+            <label><input type="checkbox" value="Signature Miami Best Pizza Medium" onchange="updateSelectedItems()"> Signature Miami Best Pizza Medium</label>
+            <label><input type="checkbox" value="Signature Miami Best Pizza Large" onchange="updateSelectedItems()"> Signature Miami Best Pizza Large</label>
+            <label><input type="checkbox" value="Malai Munch Pizza Small" onchange="updateSelectedItems()"> Malai Munch Pizza Small</label>
+            <label><input type="checkbox" value="Malai Munch Pizza Medium" onchange="updateSelectedItems()"> Malai Munch Pizza Medium</label>
+            <label><input type="checkbox" value="Malai Munch Pizza Large" onchange="updateSelectedItems()"> Malai Munch Pizza Large</label>
+            <label><input type="checkbox" value="Seekh Kabab Pizza Small" onchange="updateSelectedItems()"> Seekh Kabab Pizza Small</label>
+            <label><input type="checkbox" value="Seekh Kabab Pizza Medium" onchange="updateSelectedItems()"> Seekh Kabab Pizza Medium</label>
+            <label><input type="checkbox" value="Seekh Kabab Pizza Large" onchange="updateSelectedItems()"> Seekh Kabab Pizza Large</label>
+            <label><input type="checkbox" value="Hot And Spicy Pizza Small" onchange="updateSelectedItems()"> Hot And Spicy Pizza Small</label>
+            <label><input type="checkbox" value="Hot And Spicy Pizza Medium" onchange="updateSelectedItems()"> Hot And Spicy Pizza Medium</label>
+            <label><input type="checkbox" value="Hot And Spicy Pizza Large" onchange="updateSelectedItems()"> Hot And Spicy Pizza Large</label>
+            <label><input type="checkbox" value="Cheese Lover Pizza Small" onchange="updateSelectedItems()"> Cheese Lover Pizza Small</label>
+            <label><input type="checkbox" value="Cheese Lover Pizza Medium" onchange="updateSelectedItems()"> Cheese Lover Pizza Medium</label>
+            <label><input type="checkbox" value="Cheese Lover Pizza Large" onchange="updateSelectedItems()"> Cheese Lover Pizza Large</label>
+            <label><input type="checkbox" value="Afghani Sensation Pizza Small" onchange="updateSelectedItems()"> Afghani Sensation Pizza Small</label>
+            <label><input type="checkbox" value="Afghani Sensation Pizza Medium" onchange="updateSelectedItems()"> Afghani Sensation Pizza Medium</label>
+            <label><input type="checkbox" value="Afghani Sensation Pizza Large" onchange="updateSelectedItems()"> Afghani Sensation Pizza Large</label>
+            <label><input type="checkbox" value="Afghani Tikka Pizza Small" onchange="updateSelectedItems()"> Afghani Tikka Pizza Small</label>
+            <label><input type="checkbox" value="Afghani Tikka Pizza Medium" onchange="updateSelectedItems()"> Afghani Tikka Pizza Medium</label>
+            <label><input type="checkbox" value="Afghani Tikka Pizza Large" onchange="updateSelectedItems()"> Afghani Tikka Pizza Large</label>
+            <label><input type="checkbox" value="Pizza Fries" onchange="updateSelectedItems()"> Pizza Fries</label>
+            <label><input type="checkbox" value="Garlic Bread" onchange="updateSelectedItems()"> Garlic Bread</label>
+            <label><input type="checkbox" value="Cheese Garlic Bread" onchange="updateSelectedItems()"> Cheese Garlic Bread</label>
+            <label><input type="checkbox" value="Chicken Cheese Lasagne" onchange="updateSelectedItems()"> Chicken Cheese Lasagne</label>
+            <label><input type="checkbox" value="Crispy Chicken Hot And Shot" onchange="updateSelectedItems()"> Crispy Chicken Hot And Shot</label>
+            <label><input type="checkbox" value="Chicken Chapli Kabab Mini" onchange="updateSelectedItems()"> Chicken Chapli Kabab Mini</label>
+            <label><input type="checkbox" value="Chicken Chapli Kabab Qtr" onchange="updateSelectedItems()"> Chicken Chapli Kabab Qtr</label>
+            <label><input type="checkbox" value="Chicken Chapli Kabab Half" onchange="updateSelectedItems()"> Chicken Chapli Kabab Half</label>
+            <label><input type="checkbox" value="Chicken Lucky Special Chapli Kabab Mini" onchange="updateSelectedItems()"> Chicken Lucky Special Chapli Kabab Mini</label>
+            <label><input type="checkbox" value="Chicken Lucky Special Chapli Kabab Qtr" onchange="updateSelectedItems()"> Chicken Lucky Special Chapli Kabab Qtr</label>
+            <label><input type="checkbox" value="Chicken Lucky Special Chapli Kabab Half" onchange="updateSelectedItems()"> Chicken Lucky Special Chapli Kabab Half</label>
+            <label><input type="checkbox" value="Chicken Chatpata Chapli Kabab Mini" onchange="updateSelectedItems()"> Chicken Chatpata Chapli Kabab Mini</label>
+            <label><input type="checkbox" value="Chicken Chatpata Chapli Kabab Qtr" onchange="updateSelectedItems()"> Chicken Chatpata Chapli Kabab Qtr</label>
+            <label><input type="checkbox" value="Chicken Chatpata Chapli Kabab Half" onchange="updateSelectedItems()"> Chicken Chatpata Chapli Kabab Half</label>
+            <label><input type="checkbox" value="Chicken Peshawari Chapli Kabab Mini" onchange="updateSelectedItems()"> Chicken Peshawari Chapli Kabab Mini</label>
+            <label><input type="checkbox" value="Chicken Peshawari Chapli Kabab Qtr" onchange="updateSelectedItems()"> Chicken Peshawari Chapli Kabab Qtr</label>
+            <label><input type="checkbox" value="Chicken Peshawari Chapli Kabab Half" onchange="updateSelectedItems()"> Chicken Peshawari Chapli Kabab Half</label>
+            <label><input type="checkbox" value="Chicken Tusrkish Chapli Kabab Mini" onchange="updateSelectedItems()"> Chicken Tusrkish Chapli Kabab Mini</label>
+            <label><input type="checkbox" value="Chicken Tusrkish Chapli Kabab Qtr" onchange="updateSelectedItems()"> Chicken Tusrkish Chapli Kabab Qtr</label>
+            <label><input type="checkbox" value="Chicken Tusrkish Chapli Kabab Half" onchange="updateSelectedItems()"> Chicken Tusrkish Chapli Kabab Half</label>
+            <label><input type="checkbox" value="Chicken Paneer Chapli Kabab Mini" onchange="updateSelectedItems()"> Chicken Paneer Chapli Kabab Mini</label>
+            <label><input type="checkbox" value="Chicken Paneer Chapli Kabab Qtr" onchange="updateSelectedItems()"> Chicken Paneer Chapli Kabab Qtr</label>
+            <label><input type="checkbox" value="Chicken Paneer Chapli Kabab Half" onchange="updateSelectedItems()"> Chicken Paneer Chapli Kabab Half</label>
+            <label><input type="checkbox" value="Beef Chapli Kabab Mini" onchange="updateSelectedItems()"> Beef Chapli Kabab Mini</label>
+            <label><input type="checkbox" value="Beef Chapli Kabab Qtr" onchange="updateSelectedItems()"> Beef Chapli Kabab Qtr</label>
+            <label><input type="checkbox" value="Beef Chapli Kabab Half" onchange="updateSelectedItems()"> Beef Chapli Kabab Half</label>
+            <label><input type="checkbox" value="Beef Lucky Special Chapli Kabab Mini" onchange="updateSelectedItems()"> Beef Lucky Special Chapli Kabab Mini</label>
+            <label><input type="checkbox" value="Beef Lucky Special Chapli Kabab Qtr" onchange="updateSelectedItems()"> Beef Lucky Special Chapli Kabab Qtr</label>
+            <label><input type="checkbox" value="Beef Lucky Special Chapli Kabab Half" onchange="updateSelectedItems()"> Beef Lucky Special Chapli Kabab Half</label>
+            <label><input type="checkbox" value="Beef Chatpata Chapli Kabab Mini" onchange="updateSelectedItems()"> Beef Chatpata Chapli Kabab Mini</label>
+            <label><input type="checkbox" value="Beef Chatpata Chapli Kabab Qtr" onchange="updateSelectedItems()"> Beef Chatpata Chapli Kabab Qtr</label>
+            <label><input type="checkbox" value="Beef Chatpata Chapli Kabab Half" onchange="updateSelectedItems()"> Beef Chatpata Chapli Kabab Half</label>
+            <label><input type="checkbox" value="Beef Peshawari Chapli Kabab Mini" onchange="updateSelectedItems()"> Beef Peshawari Chapli Kabab Mini</label>
+            <label><input type="checkbox" value="Beef Peshawari Chapli Kabab Qtr" onchange="updateSelectedItems()"> Beef Peshawari Chapli Kabab Qtr</label>
+            <label><input type="checkbox" value="Beef Peshawari Chapli Kabab Half" onchange="updateSelectedItems()"> Beef Peshawari Chapli Kabab Half</label>
+            <label><input type="checkbox" value="Beef Tusrkish Chapli Kabab Mini" onchange="updateSelectedItems()"> Beef Tusrkish Chapli Kabab Mini</label>
+            <label><input type="checkbox" value="Beef Tusrkish Chapli Kabab Qtr" onchange="updateSelectedItems()"> Beef Tusrkish Chapli Kabab Qtr</label>
+            <label><input type="checkbox" value="Beef Tusrkish Chapli Kabab Half" onchange="updateSelectedItems()"> Beef Tusrkish Chapli Kabab Half</label>
+            <label><input type="checkbox" value="Beef Paneer Chapli Kabab Mini" onchange="updateSelectedItems()"> Beef Paneer Chapli Kabab Mini</label>
+            <label><input type="checkbox" value="Beef Paneer Chapli Kabab Qtr" onchange="updateSelectedItems()"> Beef Paneer Chapli Kabab Qtr</label>
+            <label><input type="checkbox" value="Beef Paneer Chapli Kabab Half" onchange="updateSelectedItems()"> Beef Paneer Chapli Kabab Half</label>
+            <label><input type="checkbox" value="Lucky Special Chargha Leg" onchange="updateSelectedItems()"> Lucky Special Chargha Leg</label>
+            <label><input type="checkbox" value="Lucky Special Chargha Chest" onchange="updateSelectedItems()"> Lucky Special Chargha Chest</label>
+            <label><input type="checkbox" value="Lucky Special Chargha Half" onchange="updateSelectedItems()"> Lucky Special Chargha Half</label>
+            <label><input type="checkbox" value="Lucky Special Chargha Full" onchange="updateSelectedItems()"> Lucky Special Chargha Full</label>
+            <label><input type="checkbox" value="Chargha Mandi With Rice Half" onchange="updateSelectedItems()"> Chargha Mandi With Rice Half</label>
+            <label><input type="checkbox" value="Chargha Mandi With Rice Full" onchange="updateSelectedItems()"> Chargha Mandi With Rice Full</label>
+            <label><input type="checkbox" value="Family Deal 1" onchange="updateSelectedItems()"> Family Deal 1</label>
+            <label><input type="checkbox" value="BBQ Platter 1" onchange="updateSelectedItems()"> BBQ Platter 1</label>
+            <label><input type="checkbox" value="BBQ Platter 2" onchange="updateSelectedItems()"> BBQ Platter 2</label>
+            <label><input type="checkbox" value="Munch Combo 1" onchange="updateSelectedItems()"> Munch Combo 1</label>
+            <label><input type="checkbox" value="Munch Combo 2" onchange="updateSelectedItems()"> Munch Combo 2</label>
+            <label><input type="checkbox" value="Kunafa" onchange="updateSelectedItems()"> Kunafa</label>
+            <label><input type="checkbox" value="Lava Cake With Ice Cream" onchange="updateSelectedItems()"> Lava Cake With Ice Cream</label>
+            <label><input type="checkbox" value="Lava Cake Without Ice Cream" onchange="updateSelectedItems()"> Lava Cake Without Ice Cream</label>
+            <label><input type="checkbox" value="Pista Kulfi" onchange="updateSelectedItems()"> Pista Kulfi</label>
+            <label><input type="checkbox" value="Crunch Kulfi" onchange="updateSelectedItems()"> Crunch Kulfi</label>
+            <label><input type="checkbox" value="Mango Kulfi (Seasonal)" onchange="updateSelectedItems()"> Mango Kulfi (Seasonal)</label>
+            <label><input type="checkbox" value="Diet Kulfi" onchange="updateSelectedItems()"> Diet Kulfi</label>
+            <label><input type="checkbox" value="Ras Malai" onchange="updateSelectedItems()"> Ras Malai</label>
+            <label><input type="checkbox" value="Vanilla Single" onchange="updateSelectedItems()"> Vanilla Single</label>
+            <label><input type="checkbox" value="Vanilla Double" onchange="updateSelectedItems()"> Vanilla Double</label>
+            <label><input type="checkbox" value="Choclate Single" onchange="updateSelectedItems()"> Choclate Single</label>
+            <label><input type="checkbox" value="Choclate Double" onchange="updateSelectedItems()"> Choclate Double</label>
+            <label><input type="checkbox" value="Pistachio Single" onchange="updateSelectedItems()"> Pistachio Single</label>
+            <label><input type="checkbox" value="Pistachio Double" onchange="updateSelectedItems()"> Pistachio Double</label>
+            <label><input type="checkbox" value="Strawberry Single" onchange="updateSelectedItems()"> Strawberry Single</label>
+            <label><input type="checkbox" value="Strawberry Double" onchange="updateSelectedItems()"> Strawberry Double</label>
+            <label><input type="checkbox" value="Mango Single" onchange="updateSelectedItems()"> Mango Single</label>
+            <label><input type="checkbox" value="Mango Double" onchange="updateSelectedItems()"> Mango Double</label>
+            <label><input type="checkbox" value="Choclate Chip Single" onchange="updateSelectedItems()"> Choclate Chip Single</label>
+            <label><input type="checkbox" value="Choclate Chip Double" onchange="updateSelectedItems()"> Choclate Chip Double</label>
+            <label><input type="checkbox" value="Kulfa Single" onchange="updateSelectedItems()"> Kulfa Single</label>
+            <label><input type="checkbox" value="Kulfa Double" onchange="updateSelectedItems()"> Kulfa Double</label>
+            <label><input type="checkbox" value="Cookies &amp; Cream Single" onchange="updateSelectedItems()"> Cookies &amp; Cream Single</label>
+            <label><input type="checkbox" value="Cookies &amp; Cream Double" onchange="updateSelectedItems()"> Cookies &amp; Cream Double</label>
+            <label><input type="checkbox" value="Small Water" onchange="updateSelectedItems()"> Small Water</label>
+            <label><input type="checkbox" value="Large Water" onchange="updateSelectedItems()"> Large Water</label>
+            <label><input type="checkbox" value="Can" onchange="updateSelectedItems()"> Can</label>
+            <label><input type="checkbox" value="500ML Soft Drink" onchange="updateSelectedItems()"> 500ML Soft Drink</label>
+            <label><input type="checkbox" value="Sting 500ml" onchange="updateSelectedItems()"> Sting 500ml</label>
+            <label><input type="checkbox" value="1.5ltr Soft Drink" onchange="updateSelectedItems()"> 1.5ltr Soft Drink</label>
+            <label><input type="checkbox" value="Garlic Nan" onchange="updateSelectedItems()"> Garlic Nan</label>
+            <label><input type="checkbox" value="Roghni Nan" onchange="updateSelectedItems()"> Roghni Nan</label>
+            <label><input type="checkbox" value="Puri Paratha" onchange="updateSelectedItems()"> Puri Paratha</label>
+            <label><input type="checkbox" value="Chapati" onchange="updateSelectedItems()"> Chapati</label>
+            <label><input type="checkbox" value="Green Salad" onchange="updateSelectedItems()"> Green Salad</label>
+            <label><input type="checkbox" value="Raita" onchange="updateSelectedItems()"> Raita</label>
+            <label><input type="checkbox" value="Plain Nan" onchange="updateSelectedItems()"> Plain Nan</label>
+            <label><input type="checkbox" value="Till Nan" onchange="updateSelectedItems()"> Till Nan</label>
+            <label><input type="checkbox" value="Coleslow" onchange="updateSelectedItems()"> Coleslow</label>
+          </div>
+        </div>
+
+        <!-- Detailed Ratings First -->
+        <div class="form-group">
+          <label>Detailed Ratings * <span style="font-size: 0.75rem; color: var(--gold-primary); font-weight: normal;">(All Required)</span></label>
+          <div class="aspect-ratings">
+
+            <div class="aspect-item">
+              <span class="aspect-label">🍗 Taste & Quality: *</span>
+              <div class="compact-stars">
+                <input type="radio" id="t5" name="tasteRating" value="5" required/><label for="t5">★</label>
+                <input type="radio" id="t4" name="tasteRating" value="4"/><label for="t4">★</label>
+                <input type="radio" id="t3" name="tasteRating" value="3"/><label for="t3">★</label>
+                <input type="radio" id="t2" name="tasteRating" value="2"/><label for="t2">★</label>
+                <input type="radio" id="t1" name="tasteRating" value="1"/><label for="t1">★</label>
+              </div>
+            </div>
+
+            <!-- Service Rating -->
+            <div class="aspect-item">
+              <span class="aspect-label">🔔 Service: *</span>
+              <div class="compact-stars">
+                <input type="radio" id="s5" name="serviceRating" value="5" required/><label for="s5">★</label>
+                <input type="radio" id="s4" name="serviceRating" value="4"/><label for="s4">★</label>
+                <input type="radio" id="s3" name="serviceRating" value="3"/><label for="s3">★</label>
+                <input type="radio" id="s2" name="serviceRating" value="2"/><label for="s2">★</label>
+                <input type="radio" id="s1" name="serviceRating" value="1"/><label for="s1">★</label>
+              </div>
+            </div>
+            
+            <div class="aspect-item">
+              <span class="aspect-label">⏱️ Serving Time: *</span>
+              <div class="compact-stars">
+                <input type="radio" id="time5" name="timeRating" value="5" required/><label for="time5">★</label>
+                <input type="radio" id="time4" name="timeRating" value="4"/><label for="time4">★</label>
+                <input type="radio" id="time3" name="timeRating" value="3"/><label for="time3">★</label>
+                <input type="radio" id="time2" name="timeRating" value="2"/><label for="time2">★</label>
+                <input type="radio" id="time1" name="timeRating" value="1"/><label for="time1">★</label>
+              </div>
+            </div>
+
+            <div class="aspect-item">
+              <span class="aspect-label">🤝 Staff Hospitality: *</span>
+              <div class="compact-stars">
+                <input type="radio" id="staff5" name="staffRating" value="5" required/><label for="staff5">★</label>
+                <input type="radio" id="staff4" name="staffRating" value="4"/><label for="staff4">★</label>
+                <input type="radio" id="staff3" name="staffRating" value="3"/><label for="staff3">★</label>
+                <input type="radio" id="staff2" name="staffRating" value="2"/><label for="staff2">★</label>
+                <input type="radio" id="staff1" name="staffRating" value="1"/><label for="staff1">★</label>
+              </div>
+            </div>
+
+            <div class="aspect-item">
+              <span class="aspect-label">🏛️ Ambiance: *</span>
+              <div class="compact-stars">
+                <input type="radio" id="amb5" name="ambianceRating" value="5" required/><label for="amb5">★</label>
+                <input type="radio" id="amb4" name="ambianceRating" value="4"/><label for="amb4">★</label>
+                <input type="radio" id="amb3" name="ambianceRating" value="3"/><label for="amb3">★</label>
+                <input type="radio" id="amb2" name="ambianceRating" value="2"/><label for="amb2">★</label>
+                <input type="radio" id="amb1" name="ambianceRating" value="1"/><label for="amb1">★</label>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Overall Rating Second -->
+        <div class="form-group">
+          <label>Overall Rating *</label>
+          <div class="star-rating-box">
+            <div class="star-rating">
+              <input type="radio" id="st5" name="overallStar" value="5" required onclick="setRatingText('Superb')"/><label for="st5">★</label>
+              <input type="radio" id="st4" name="overallStar" value="4" onclick="setRatingText('Excellent')"/><label for="st4">★</label>
+              <input type="radio" id="st3" name="overallStar" value="3" onclick="setRatingText('Satisfied')"/><label for="st3">★</label>
+              <input type="radio" id="st2" name="overallStar" value="2" onclick="setRatingText('Needs Improvement')"/><label for="st2">★</label>
+              <input type="radio" id="st1" name="overallStar" value="1" onclick="setRatingText('Poor')"/><label for="st1">★</label>
+            </div>
+            <div class="rating-description" id="ratingText">Select Rating</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="custComment">Your Feedback (Type or Record Voice) *</label>
+          <textarea id="custComment" rows="3" placeholder="Write your comments here..."></textarea>
+
+          <div class="voice-section">
+            <div class="voice-controls">
+              <button type="button" id="recBtn" class="btn-rec"><i class="fa-solid fa-microphone"></i> Record Voice</button>
+              <span id="recStatus" class="rec-status">Tap to speak your review</span>
+            </div>
+            <audio id="audioPreview" controls style="display:none;"></audio>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit">SUBMIT REVIEW</button>
+      </form>
+    </div>
+
+    <div id="successCard" class="card success-card">
+      <i class="fa-solid fa-circle-check"></i>
+      <h2>Thank You!</h2>
+      <p style="color: var(--text-muted); margin-top: 5px;">Your valuable feedback has been submitted successfully.</p>
+      <button onclick="resetForm()" class="btn-submit" style="margin-top: 20px; width: auto; padding: 10px 24px;">Submit Another Review</button>
+    </div>
+
+    <div id="adminPanel" class="admin-panel card">
+      <div class="admin-header">
+        <div>
+          <h2 style="color: var(--gold-primary);">Owner Dashboard</h2>
+          <span class="admin-badge">Real-Time Cloud Sync Active</span>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+          <!-- Admin Filter Option -->
+          <select aria-label="Filter by order type" id="adminFilter" class="filter-select" onchange="renderAdminReviews()">
+            <option value="All">All Orders</option>
+            <option value="Dine-in">Dine-in Only</option>
+            <option value="Takeaway">Takeaway Only</option>
+          </select>
+
+          <label class="admin-filter-field" for="adminDayFilter">Day
+            <select id="adminDayFilter" class="filter-select" onchange="renderAdminReviews()">
+              <option value="All">All Days</option>
+              <option value="1">Monday</option>
+              <option value="2">Tuesday</option>
+              <option value="3">Wednesday</option>
+              <option value="4">Thursday</option>
+              <option value="5">Friday</option>
+              <option value="6">Saturday</option>
+              <option value="0">Sunday</option>
+            </select>
+          </label>
+          <label class="admin-filter-field" for="adminDateFilter">Date
+            <input type="date" id="adminDateFilter" class="filter-select" onchange="renderAdminReviews()">
+          </label>
+          <button class="btn-export" onclick="clearAdminFilters()">Clear Filters</button>
+
+          <button class="btn-export" onclick="exportCSV()"><i class="fa-solid fa-download"></i> CSV Excel</button>
+          <button onclick="closeAdmin()" class="btn-submit" style="background:#4a1520; color:#fff; padding: 6px 12px; font-size: 0.85rem; width: auto; margin-top:0;">Exit</button>
+        </div>
+      </div>
+
+      <p class="admin-filter-note">Showing the last 60 days by default. Select a date to view reviews from any day. Filters also apply to CSV exports.</p>
+      <div id="adminReviewsList" aria-live="polite"></div>
+    </div>
+
+  </div>
+
+  <div id="pinModal" class="modal">
+    <div class="modal-content">
+      <h3 style="margin-bottom: 12px; color: var(--gold-primary);">Admin Verification</h3>
+      <input type="password" id="pinInput" placeholder="Enter PIN (Default: 1234)" style="text-align: center; font-size: 1.1rem; margin-bottom: 18px;">
+      <div style="display:flex; gap:10px;">
+        <button class="btn-submit" onclick="verifyPin()">Login</button>
+        <button class="btn-submit" style="background:#4a1520; color:#fff;" onclick="closeModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
